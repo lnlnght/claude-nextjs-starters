@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null)\" 2>/dev/null || exit 0; STATUS=$(git status --porcelain 2>/dev/null | grep -v -e '\\.claude/' -e '%programdata%/' -e '\\.playwright-mcp/' || true); if [ -z \"$STATUS\" ]; then exit 0; fi; MARKER=\".claude/.last-reviewed-diff\"; CURRENT=$(printf '%s\\n%s' \"$STATUS\" \"$(git diff HEAD 2>/dev/null)\" | sha1sum | cut -d' ' -f1); PREV=$(cat \"$MARKER\" 2>/dev/null || true); if [ \"$CURRENT\" = \"$PREV\" ]; then exit 0; fi; mkdir -p .claude; printf '%s' \"$CURRENT\" > \"$MARKER\"; echo '{\"decision\":\"block\",\"reason\":\"소스 코드 변경이 감지되었습니다. Task 도구로 code-reviewer 서브에이전트를 실행해 방금 구현한 코드를 리뷰한 뒤 결과를 보고하세요.\"}'",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
